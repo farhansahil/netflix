@@ -1,0 +1,17 @@
+
+body{
+    background-color: grey;
+}
+
+.main-container{
+    margin-top: 100px;
+    width: 900px;
+    background-color: aliceblue;
+    height: 600px;
+
+}
+
+.sub-container{
+    padding: 25px;
+}
+

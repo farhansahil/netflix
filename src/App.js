@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import FetchData from "./components/FetchData";
+import Navbar from "./components/Navbar";
+import Science from "./components/Science";
+import Horror from "./components/Horror";
+import Romance from "./components/Romance";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route exact path="/" element={<FetchData />} />          
+          <Route exact path="science" element={<Science />} />
+          <Route exact path="horror" element={<Horror />} />
+          <Route exact path="romance" element={<Romance />} />
+        </Routes>
+      </Router>
+    </>
   );
-}
+};
 
 export default App;

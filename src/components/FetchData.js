@@ -49,7 +49,7 @@ const FetchData = () => {
   return (
     <>
       <div className="container" style={{ marginTop: "20px" }}>
-        {isLoading == true && <Spinner />}
+        {isLoading === true && <Spinner />}
         <div className="row">
           {!isLoading &&
             currentContent.map((currElement) => {

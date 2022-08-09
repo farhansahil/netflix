@@ -11,7 +11,7 @@ const Card = (props) => {
         <div className="card-body">
           <h5 className="card-title">{name}</h5>
           <p className="card-text">{summary.slice(0, 200)}</p>
-          <a href={link} key={id} target="_blank" className="btn btn-primary">
+          <a href={link} key={id} target="_blank" rel="noreferrer" className="btn btn-primary">
             Go Website
           </a>
         </div>

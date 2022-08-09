@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./css/style.css";
 const Pagination = ({ contentPerPage, totalContents, paginate }) => {
   const pageNumbers = [];

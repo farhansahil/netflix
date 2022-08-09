@@ -1,54 +1,78 @@
-import React, { useEffect, useState } from 'react'
-import Card from './Card'
+import React, { useEffect, useState } from "react";
+import Card from "./Card";
+import Pagination from "./Pagination";
+import "./css/style.css";
+import Spinner from "./Spinner";
+const FetchData = () => {
+  const [series, setSeries] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [contentPerPage] = useState(12);
+  const [isLoading, setIsLoading] = useState(false);
 
-const FetchData = (props) => {
+//function to fetch the data form the api
+  const fetchApi = async () => {
+    const response = await fetch(`http://api.tvmaze.com/shows`);
 
-    const [seriesName, setSeriesName] = useState([]);
-    const [count, setCount] = useState(1);
-
-    const fetchApi = async () => {
-        const response = await fetch('http://api.tvmaze.com/shows');
-        if (!response.ok) {
-            throw new Error('Data coud not be fetched!')
-          } else {
-            return response.json()
-          }
+    if (!response.ok) {
+      throw new Error("Data coud not be fetched!");
+    } else {
+      return response.json();
     }
+  };
 
-    useEffect(() => {
-        fetchApi()
-        
-          .then((res) => {
-            setCount(1);
-            setSeriesName(res)
-            
-          })
-          .catch((e) => {
-            console.log(e.message)
-          })
-      }, [])
+  //Change page 
+  const paginate = (pageNumber) => {
+    window.scrollTo(0, 0);
+    setIsLoading(true);
+    setCurrentPage(pageNumber);
+    setIsLoading(false);
+  };
 
-      let sliceName = []
-      const clicked = () => {
-        alert("Hello")
-      }
+  useEffect(() => {
+    setIsLoading(true);
+    fetchApi()
+      .then((res) => {
+        setSeries(res);
+        setIsLoading(false);
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+  }, []);
+
+
+//logic to change the content of the page
+  const indexOfLastContent = currentPage * contentPerPage;
+  const indexOfFirstContent = indexOfLastContent - contentPerPage;
+  const currentContent = series.slice(indexOfFirstContent, indexOfLastContent);
 
   return (
     <>
-
-    <div className="container">
+      <div className="container" style={{ marginTop: "20px" }}>
+        {isLoading == true && <Spinner />}
         <div className="row">
-        { 
-          sliceName.map((currElement) => {
-        return <Card name={currElement.name} image={currElement.image.medium}/>
-
-    })}
+          {!isLoading &&
+            currentContent.map((currElement) => {
+              return (
+                <Card
+                  id={currElement.id}
+                  name={currElement.name}
+                  image={currElement.image.medium}
+                  link={currElement.officialSite}
+                  summary={currElement.summary}
+                  rating={currElement.rating.average}
+                />
+              );
+            })}
+          <Pagination
+            contentPerPage={contentPerPage}
+            totalContents={series.length}
+            paginate={paginate}
+          />
         </div>
-        <a onClick={clicked} class="waves-effect waves-light btn" style={{marginBottom: "30px", float: "right"}}>Next</a>
-    </div>
-    
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default FetchData
+export default FetchData;

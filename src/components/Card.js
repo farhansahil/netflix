@@ -1,28 +1,21 @@
 import React from "react";
-
+import "./css/style.css";
 const Card = (props) => {
-
-    const {name,image} = props;
+  const { id, name, image, link, summary, rating } = props;
   return (
     <>
-        <div className="col s6 m4">
-          <div className="card">
-            <div className="card-image">
-              <img src={image} />
-              <span className="card-title">{name}</span>
-              <a className="btn-floating halfway-fab waves-effect waves-light red">
-                <i className="material-icons">add</i>
-              </a>
-            </div>
-            <div className="card-content">
-              <p>
-                I am a very simple card. I am good at containing small bits of
-                information. I am convenient because I require little markup to
-                use effectively.
-              </p>
-            </div>
-          </div>
+      <div className="card" style={{ width: "18rem", margin: "10px" }}>
+        <span className="badge rounded-pill bg-danger">{rating}</span>
+        <img src={image} className="card-img-top" alt="..." />
+
+        <div className="card-body">
+          <h5 className="card-title">{name}</h5>
+          <p className="card-text">{summary.slice(0, 200)}</p>
+          <a href={link} key={id} target="_blank" className="btn btn-primary">
+            Go Website
+          </a>
         </div>
+      </div>
     </>
   );
 };

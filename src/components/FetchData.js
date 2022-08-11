@@ -1,74 +1,105 @@
-import React, { useEffect, useState } from "react";
-import Card from "./Card";
-import Pagination from "./Pagination";
-import "./css/style.css";
-import Spinner from "./Spinner";
+import React from "react";
+import { useState, useEffect } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { Link } from "react-router-dom";
+
+
 const FetchData = () => {
-  const [series, setSeries] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [contentPerPage] = useState(12);
-  const [isLoading, setIsLoading] = useState(false);
-
-//function to fetch the data form the api
-  const fetchApi = async () => {
-    const response = await fetch(`http://api.tvmaze.com/shows`);
-
-    if (!response.ok) {
-      throw new Error("Data coud not be fetched!");
-    } else {
-      return response.json();
-    }
-  };
-
-  //Change page 
-  const paginate = (pageNumber) => {
-    window.scrollTo(0, 0);
-    setIsLoading(true);
-    setCurrentPage(pageNumber);
-    setIsLoading(false);
-  };
+  const [data, setData] = useState([]);
+  const [filter, setfilter] = useState(data);
+  const [loading, setloading] = useState(false);
+  let componentMount = true;
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchApi()
-      .then((res) => {
-        setSeries(res);
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
+    const getSeries = async () => {
+      setloading(true);
+      const response = await fetch("http://api.tvmaze.com/shows");
+      if (componentMount) {
+        setData(await response.clone().json());
+        setfilter(await response.json());
+        setloading(false);
+      }
+
+      return () => {
+        componentMount(false);
+      };
+    };
+    getSeries();
   }, []);
 
+  const Loading = () => {
+    return (
+      <>
+        <div className="col-md-3">
+            <Skeleton height={350} />
+        </div>
+        <div className="col-md-3">
+            <Skeleton height={350} />
+        </div>
+        <div className="col-md-3">
+            <Skeleton height={350} />
+        </div>
+        <div className="col-md-3">
+            <Skeleton height={350} />
+        </div>
+      </>
+    );
+  };
 
-//logic to change the content of the page
-  const indexOfLastContent = currentPage * contentPerPage;
-  const indexOfFirstContent = indexOfLastContent - contentPerPage;
-  const currentContent = series.slice(indexOfFirstContent, indexOfLastContent);
+  const filterSeries = (cat) => {
+    const updatedList = data.filter((x) => x.genres.includes(cat))
+    setfilter(updatedList)
+  } 
 
+  const ShowSeries = () => {
+    return (
+      <>
+        <div className="buttons d-flex justify-content-center mb-5 pb-5">
+          <button className="btn btn-outline-dark me-2" onClick={() => setfilter(data)}>All</button>
+          <button className="btn btn-outline-dark me-2" onClick={() => filterSeries("Comedy")}>Comedy</button>
+          <button className="btn btn-outline-dark me-2" onClick={() => filterSeries("Science-Fiction")}>Science-Fiction</button>
+          <button className="btn btn-outline-dark me-2" onClick={() => filterSeries("Crime")}>Crime</button>
+          <button className="btn btn-outline-dark me-2" onClick={() => filterSeries("Romance")}>Romance</button>
+
+        
+        </div>
+
+        {filter.map((sereis) => {
+          return (
+            <>
+              <div className="col-md-3 mb-4">
+                <div class="card h-100 text-center p-4" key={sereis.id}  style={{width: "18rem"}} >
+                  <img class="card-img-top" height="250px" src={sereis.image.original} alt={sereis.title} />
+                  <div class="card-body">
+                    <h5 class="card-title mb-0">{sereis.name}</h5>
+                    {/* <p class="card-text fw-bolder fs-5 my-3">
+                      ${sereis.price}
+                    </p> */}
+                    <Link to={`/webseries/${sereis.id}`} class="btn btn-outline-dark my-3">
+                     Know More
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </>
+          );
+        })}
+      </>
+    );
+  };
   return (
     <>
-      <div className="container" style={{ marginTop: "20px" }}>
-        {isLoading === true && <Spinner />}
+      <div className="container my-5 py-5">
         <div className="row">
-          {!isLoading &&
-            currentContent.map((currElement) => {
-              return (
-                <Card
-                  id={currElement.id}
-                  name={currElement.name}
-                  image={currElement.image.medium}
-                  link={currElement.officialSite}
-                  summary={currElement.summary}
-                  rating={currElement.rating.average}
-                />
-              );
-            })}
-          <Pagination
-            contentPerPage={contentPerPage}
-            totalContents={series.length}
-            paginate={paginate}
-          />
+          <div className="col-12 mb-5">
+            <h1 className="display-6 fw-bolder text-center">Latest Webseries</h1>
+            <hr />
+          </div>
+        </div>
+
+        <div className="row justify-content-center">
+          {loading ? <Loading /> : <ShowSeries />}
         </div>
       </div>
     </>
